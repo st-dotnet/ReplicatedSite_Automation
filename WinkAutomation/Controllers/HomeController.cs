@@ -1,16 +1,23 @@
-﻿using System;
-using System.Threading;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using WinkAutomation.Models;
 
-namespace SeleniumSample
+namespace WinkAutomation.Controllers
 {
-    public class Program
+    public class HomeController : Controller
     {
+        private readonly ILogger<HomeController> _logger;
         private const string signinURL = "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/sign-in";
-        private const string shopURL= "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/store/products";
-        private const string aboutURL= "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/about";
+        private const string shopURL = "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/store/products";
+        private const string aboutURL = "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/about";
         private const string joinURL = "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/enrollment";
         private const string searchURL = "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/store/search-products";
         private const string cartURL = "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/store/cart";
@@ -23,10 +30,20 @@ namespace SeleniumSample
         private const string MensCareURL = "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/store/products/Men's-Care";
         private const string WinkMerchURL = "https://winknaturalsreplicatedsite-frontend.azurewebsites.net/#/store/products/Wink-Merch";
 
-        static void Main(string[] args)
+        public HomeController(ILogger<HomeController> logger)
         {
-            IWebDriver driver;          
-            driver = new ChromeDriver(); 
+            _logger = logger;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        public IActionResult Automation()
+        {
+            IWebDriver driver;
+            driver = new ChromeDriver();
 
             //Sign In functionality
             SignIn(driver);
@@ -72,11 +89,17 @@ namespace SeleniumSample
 
             //Wink Merch Functionality
             WinkMerch(driver);
+            return View();
+        }
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         //Sign In functionality
-        private static void SignIn(IWebDriver driver)
+        private void SignIn(IWebDriver driver)
         {
             try
             {
@@ -104,11 +127,11 @@ namespace SeleniumSample
             {
                 Console.WriteLine($"Some error occurred during signin process. Here is the error message : {ex.Message}");
             }
-            
+
         }
 
         //Shop tab click
-        private static void ShopTab(IWebDriver driver)
+        private void ShopTab(IWebDriver driver)
         {
             IWebElement shop = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/app-header/header/nav/div/div[3]/ul[1]/li[1]/a"));
             shop.Click();
@@ -121,7 +144,7 @@ namespace SeleniumSample
         }
 
         //Blog tab functionality
-        private static void BlogTab(IWebDriver driver)
+        private void BlogTab(IWebDriver driver)
         {
             IWebElement blog = driver.FindElement(By.XPath("/html[1]/body[1]/app-root[1]/app-layout[1]/div[1]/app-header[1]/header[1]/nav[1]/div[1]/div[3]/ul[1]/li[2]/a[1]"));
             blog.Click();
@@ -132,7 +155,7 @@ namespace SeleniumSample
         }
 
         //About tab functionality
-        private static void AboutTab(IWebDriver driver)
+        private void AboutTab(IWebDriver driver)
         {
             IWebElement about = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/app-header/header/nav/div/div[3]/ul[1]/li[3]/a"));
             about.Click();
@@ -147,7 +170,7 @@ namespace SeleniumSample
         }
 
         //Join tab functionality
-        private static void JoinTab (IWebDriver driver)
+        private void JoinTab(IWebDriver driver)
         {
             IWebElement join = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/app-header/header/nav/div/div[3]/ul[1]/li[4]/a"));
             join.Click();
@@ -158,11 +181,11 @@ namespace SeleniumSample
             else
                 Console.WriteLine("join_logo is Not Clickable");
             Thread.Sleep(5000);
-            
+
         }
 
         //Search Icon functionality
-        private static void SearchIcon(IWebDriver driver)
+        private void SearchIcon(IWebDriver driver)
         {
             IWebElement search = driver.FindElement(By.XPath("/html[1]/body[1]/app-root[1]/app-layout[1]/div[1]/app-header[1]/header[1]/nav[1]/div[1]/div[3]/ul[2]/li[1]/a[1]/i[1]"));
             search.Click();
@@ -175,7 +198,7 @@ namespace SeleniumSample
         }
 
         //Web Logo functionality
-        private static void WebLogo(IWebDriver driver)
+        private void WebLogo(IWebDriver driver)
         {
             IWebElement web_logo = driver.FindElement(By.XPath("/html[1]/body[1]/app-root[1]/app-layout[1]/div[1]/app-header[1]/header[1]/nav[1]/div[1]/div[3]/div[1]/a[1]/img[1]"));
             web_logo.Click();
@@ -183,7 +206,7 @@ namespace SeleniumSample
         }
 
         //Cart Icon functionality
-        private static void CartIcon(IWebDriver driver)
+        private void CartIcon(IWebDriver driver)
         {
             IWebElement cart = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/app-header/header/nav/div/div[3]/ul[2]/li[2]/a/i"));
             cart.Click();
@@ -197,7 +220,7 @@ namespace SeleniumSample
         }
 
         // All Product dropdown Click
-        private static void AllProductBox(IWebDriver driver)
+        private void AllProductBox(IWebDriver driver)
         {
             IWebElement Productbox = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/div/app-shop/section[1]/div[2]/form/div[1]/select"));
             Productbox.Click();
@@ -206,9 +229,9 @@ namespace SeleniumSample
         }
 
         //Comfort patch Functionality
-        private static void ComfortPatch(IWebDriver driver)
+        private void ComfortPatch(IWebDriver driver)
         {
-            IWebElement Comfort  = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/div/app-shop/section[1]/div[2]/form/div[1]/select/option[2]"));
+            IWebElement Comfort = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/div/app-shop/section[1]/div[2]/form/div[1]/select/option[2]"));
             Comfort.Click();
             Thread.Sleep(3);
             string current_Comfort_URL = driver.Url;
@@ -219,7 +242,7 @@ namespace SeleniumSample
         }
 
         //Sleep Dropdown functionality
-        private static void Sleep(IWebDriver driver)
+        private void Sleep(IWebDriver driver)
         {
             IWebElement Sleep_Element = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/div/app-shop/section[1]/div[2]/form/div[1]/select/option[3]"));
             Sleep_Element.Click();
@@ -232,7 +255,7 @@ namespace SeleniumSample
         }
 
         //Skin Care Dropdown functionality
-        private static void SkinCare(IWebDriver driver)
+        private void SkinCare(IWebDriver driver)
         {
             IWebElement Skin_Care = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/div/app-shop/section[1]/div[2]/form/div[1]/select/option[4]"));
             Skin_Care.Click();
@@ -245,7 +268,7 @@ namespace SeleniumSample
         }
 
         //Teething dropdown functioanlity
-        private static void Teething(IWebDriver driver)
+        private void Teething(IWebDriver driver)
         {
             IWebElement Teething_Element = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/div/app-shop/section[1]/div[2]/form/div[1]/select/option[5]"));
             Teething_Element.Click();
@@ -258,7 +281,7 @@ namespace SeleniumSample
         }
 
         //Health dropdown Functionality
-        private static void HealthNutrition(IWebDriver driver)
+        private void HealthNutrition(IWebDriver driver)
         {
             IWebElement Health_Element = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/div/app-shop/section[1]/div[2]/form/div[1]/select/option[6]"));
             Health_Element.Click();
@@ -271,7 +294,7 @@ namespace SeleniumSample
         }
 
         //Mens Care dropdown functionality
-        private static void MensCare(IWebDriver driver)
+        private void MensCare(IWebDriver driver)
         {
             IWebElement MensCare_Element = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/div/app-shop/section[1]/div[2]/form/div[1]/select/option[7]"));
             MensCare_Element.Click();
@@ -284,7 +307,7 @@ namespace SeleniumSample
         }
 
         //Wink Merch dropdown functionality 
-        private static void WinkMerch(IWebDriver driver)
+        private void WinkMerch(IWebDriver driver)
         {
             IWebElement WinkMerch_Element = driver.FindElement(By.XPath("/html/body/app-root/app-layout/div/div/app-shop/section[1]/div[2]/form/div[1]/select/option[8]"));
             WinkMerch_Element.Click();
